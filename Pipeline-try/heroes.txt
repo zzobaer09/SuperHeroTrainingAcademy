@@ -1,3 +1,0 @@
-BALANCE,0.0
-1,TestHero,2,Speed,Lightning,Telepathy
-2,Zobaer man,2,Ice,Speed,Water,Lightning,Tech
