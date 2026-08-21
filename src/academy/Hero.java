@@ -1,7 +1,10 @@
 package academy;
 
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.Scanner;
 
 //import threat.Threat;
 import id.IdGenerator;
@@ -19,44 +22,41 @@ public class Hero {
         this.name = name;
         this.level = 1;
         this.powers = new ArrayList<>();
-
+        generateRandomPowers();
     }
 
     private void generateRandomPowers() {
 
         Random random = new Random();
 
-        String[] allPowers = {
-                "Fire",
-                "Strength",
-                "Speed",
-                "Tech",
-                "Telepathy",
-                "Water",
-                "Ice",
-                "Lightning"
-        };
+        ArrayList<Power> allPowers = new ArrayList<>();
+
+        File file = new File("data_files/powers.txt");
+
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                allPowers.add(new Power(line));
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("File not found: " + e.getMessage());
+        }
 
         int numberOfPowers = random.nextInt(3) + 3;
 
-        while (powers.size() < numberOfPowers) {
-
-            String randomPower =
-                    allPowers[random.nextInt(allPowers.length)];
-
-            boolean exists = false;
-
+        int countP = 0;
+        while ( countP < numberOfPowers) {
+            Power p = allPowers.get(random.nextInt(allPowers.size()));
+            boolean addPower = true;
             for (Power power : powers) {
-
-                if (power.getType().equalsIgnoreCase(randomPower)) {
-                    exists = true;
+                if(power.getType()==p.getType()){
+                    addPower = false;
                     break;
                 }
             }
-
-            if (!exists) {
-
-                powers.add(new Power(randomPower));
+            if (addPower) {
+                powers.add(p);
+                countP++;
             }
         }
     }
