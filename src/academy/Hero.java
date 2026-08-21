@@ -3,24 +3,23 @@ package academy;
 import java.util.ArrayList;
 import java.util.Random;
 
-import threat.Threat;
+//import threat.Threat;
 import id.IdGenerator;
 
-public class Hero implements Trainable {
+public class Hero {
 
-    private int id;
+    private IdGenerator id;
     private String name;
     private int level;
     private ArrayList<Power> powers;
 
     public Hero(String name) {
 
-        this.id = IdGenerator();
+        this.id = new IdGenerator();
         this.name = name;
         this.level = 1;
         this.powers = new ArrayList<>();
 
-        generateRandomPowers();
     }
 
     private void generateRandomPowers() {
@@ -74,46 +73,46 @@ public class Hero implements Trainable {
         this.name = name;
     }
 
-    public boolean isEligible(Threat threat) {
+    // public boolean isEligible(Threat threat) {
 
-        if (level < threat.getRequiredLevel()) {
-            return false;
-        }
+    //     if (level < threat.getRequiredLevel()) {
+    //         return false;
+    //     }
 
-        for (Power power : powers) {
+    //     for (Power power : powers) {
 
-            if (power.getType().equalsIgnoreCase(
-                    threat.getRequiredPower())) {
+    //         if (power.getType().equalsIgnoreCase(
+    //                 threat.getRequiredPower())) {
 
-                return true;
-            }
-        }
+    //             return true;
+    //         }
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
-    @Override
-    public double getTrainingCost() {
-        return 100 + 25 * powers.size() + 10 * level;
-    }
+    // @Override
+    // public double getTrainingCost() {
+    //     return 100 + 25 * powers.size() + 10 * level;
+    // }
 
-    @Override
-    public int getTrainingTime() {
-        return 30 + 15 * powers.size() + 5 * level;
-    }
+    // @Override
+    // public int getTrainingTime() {
+    //     return 30 + 15 * powers.size() + 5 * level;
+    // }
 
-    @Override
-    public double getMonthlyAllowance() {
-        return 500 + 100 * level + 25 * powers.size();
-    }
+    // @Override
+    // public double getMonthlyAllowance() {
+    //     return 500 + 100 * level + 25 * powers.size();
+    // }
 
-    @Override
-    public double getThreatReward(Threat threat) {
-        return 250 * threat.getRequiredLevel() + 50 * level;
-    }
+    // @Override
+    // public double getThreatReward(Threat threat) {
+    //     return 250 * threat.getRequiredLevel() + 50 * level;
+    // }
 
-    public int getId() {
-        return id;
+    public String getId() {
+        return id.getId();
     }
 
     public String getName() {
