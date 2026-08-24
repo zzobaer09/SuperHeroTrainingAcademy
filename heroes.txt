@@ -1,5 +1,4 @@
 BALANCE,10350.0
-4,DIH man,10,Lightning,Water,Tech,Speed
-5,Saif Man,6,Fire,Strength,Tech,Water,Speed
-6,Tahsan man,5,Water,Strength,Lightning
+5,Saif Man,7,Fire,Strength,Tech,Water,Speed
+6,Tahsan man,6,Water,Strength,Lightning
 7,Zobaer Man,4,Ice,Speed,Water,Telepathy,Strength
