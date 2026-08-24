@@ -1,7 +1,7 @@
 BALANCE,54350.0
-5,dih man,46,Fire,Strength,Tech,Water,Speed
-6,Tahsan Man,52,Water,Strength,Lightning
-13,kdzlja,52,Tech,Water,Speed,Ice,Telepathy
+5,dih man,50,Fire,Strength,Tech,Water,Speed
+6,Tahsan Man,56,Water,Strength,Lightning
+13,kdzlja,54,Tech,Water,Speed,Ice,Telepathy
 17,dasdfkjiasdf,23,Speed,Lightning,Water,Fire,Telepathy
 18,Tahsan man (Copy),33,Water,Strength,Lightning
 19,Tahsan man (Copy),24,Water,Strength,Lightning
