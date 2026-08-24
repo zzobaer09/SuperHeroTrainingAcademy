@@ -1,28 +1,39 @@
 package gui;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+
 import academy.Academy;
 import academy.Hero;
-import academy.Power;
 import data.DataManager;
-import finance.FinanceManager;
 
 public class TrainingPanel extends JPanel {
 
     private final MainFrame mainFrame;
     private final Academy academy;
     private final DataManager dataManager;
-    private final FinanceManager financeManager;
 
     private JPanel cardsContainer;
 
-    public TrainingPanel(MainFrame mainFrame, Academy academy, DataManager dataManager, FinanceManager financeManager) {
+    public TrainingPanel(MainFrame mainFrame, Academy academy, DataManager dataManager) {
         this.mainFrame = mainFrame;
         this.academy = academy;
         this.dataManager = dataManager;
-        this.financeManager = financeManager;
 
         initComponents();
     }
@@ -68,10 +79,7 @@ public class TrainingPanel extends JPanel {
 
     private JPanel createHeroCard(Hero hero) {
         JPanel card = new JPanel(new BorderLayout(15, 10));
-        card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(203, 213, 225), 1),
-                BorderFactory.createEmptyBorder(12, 16, 12, 16)
-        ));
+        card.setBorder(BorderFactory.createLineBorder(new Color(203, 213, 225), 1));
         card.setBackground(new Color(248, 250, 252));
         card.setMaximumSize(new Dimension(Integer.MAX_VALUE, 110));
 
@@ -86,15 +94,7 @@ public class TrainingPanel extends JPanel {
         infoPanel.add(titleLabel);
 
         // Line 2: Powers
-        StringBuilder powersStr = new StringBuilder();
-        ArrayList<Power> powers = hero.getPowers();
-        for (int i = 0; i < powers.size(); i++) {
-            powersStr.append(powers.get(i).getType());
-            if (i < powers.size() - 1) {
-                powersStr.append(", ");
-            }
-        }
-        JLabel powersLabel = new JLabel("Active Powers: " + powersStr);
+        JLabel powersLabel = new JLabel("Active Powers: " + GUIUtils.formatPowers(hero));
         powersLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         powersLabel.setForeground(new Color(51, 65, 85));
         infoPanel.add(powersLabel);
@@ -108,30 +108,22 @@ public class TrainingPanel extends JPanel {
 
         card.add(infoPanel, BorderLayout.CENTER);
 
-        // Right button panel
-        JPanel buttonPanel = new JPanel(new GridBagLayout());
-        buttonPanel.setOpaque(false);
-
+        // Right button
         JButton trainBtn = new JButton("⚡ TRAIN HERO (+1 LEVEL)");
         trainBtn.setFont(new Font("Segoe UI", Font.BOLD, 12));
         trainBtn.setBackground(new Color(234, 179, 8)); // Amber/Yellow
         trainBtn.setFocusPainted(false);
 
-        trainBtn.addActionListener(e -> {
-            int prevLevel = hero.getLevel();
-            academy.trainHero(hero.getId());
-            dataManager.saveHeroes(academy.getHeroes(), academy.getBalance());
-            mainFrame.refreshAll();
-            JOptionPane.showMessageDialog(
-                    this,
-                    hero.getName() + " trained successfully!\nLevel: " + prevLevel + " ➔ " + hero.getLevel(),
-                    "Training Complete",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
+        trainBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                academy.trainHero(hero.getId());
+                dataManager.saveHeroes(academy.getHeroes(), academy.getBalance());
+                mainFrame.refreshAll();
+            }
         });
 
-        buttonPanel.add(trainBtn);
-        card.add(buttonPanel, BorderLayout.EAST);
+        card.add(trainBtn, BorderLayout.EAST);
 
         return card;
     }

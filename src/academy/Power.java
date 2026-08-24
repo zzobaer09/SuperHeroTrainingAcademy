@@ -8,6 +8,11 @@ public class Power {
         this.type = type;
     }
 
+    // Copy Constructor
+    public Power(Power other) {
+        this.type = other.type;
+    }
+
     public String getType() {
         return type;
     }

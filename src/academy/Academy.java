@@ -32,6 +32,20 @@ public class Academy {
 
     }
 
+    // Copy a hero using the copy constructor
+    public Hero copyHero(int heroId) {
+
+        Hero original = findHero(heroId);
+
+        if (original == null) {
+            return null;
+        }
+
+        Hero cloned = new Hero(original);
+        heroes.add(cloned);
+        return cloned;
+    }
+
     // Update an existing hero's name
     public boolean updateHero(int heroId, String newName) {
 

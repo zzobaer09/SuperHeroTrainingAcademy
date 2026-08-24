@@ -1,7 +1,22 @@
 package gui;
 
-import java.awt.*;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import academy.Academy;
 import data.DataManager;
 import finance.FinanceManager;
@@ -17,7 +32,6 @@ public class MainFrame extends JFrame {
     private TrainingPanel trainingPanel;
     private ThreatPanel threatPanel;
     private FinancePanel financePanel;
-    private JTabbedPane tabbedPane;
 
     public MainFrame() {
         super("Superhero Training Academy");
@@ -60,27 +74,37 @@ public class MainFrame extends JFrame {
         JButton refreshBtn = new JButton("🔄 Refresh");
         refreshBtn.setFont(new Font("Segoe UI", Font.PLAIN, 12));
         refreshBtn.setFocusPainted(false);
-        refreshBtn.addActionListener(e -> refreshAll());
+        refreshBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                refreshAll();
+            }
+        });
         rightHeaderPanel.add(refreshBtn);
 
         headerPanel.add(rightHeaderPanel, BorderLayout.EAST);
         add(headerPanel, BorderLayout.NORTH);
 
         // Tabbed Pane
-        tabbedPane = new JTabbedPane();
+        JTabbedPane tabbedPane = new JTabbedPane();
         tabbedPane.setFont(new Font("Segoe UI", Font.BOLD, 13));
 
-        heroPanel = new HeroPanel(this, academy, dataManager, financeManager);
-        trainingPanel = new TrainingPanel(this, academy, dataManager, financeManager);
-        threatPanel = new ThreatPanel(this, academy, dataManager, financeManager);
-        financePanel = new FinancePanel(this, academy, dataManager, financeManager);
+        heroPanel = new HeroPanel(this, academy, dataManager);
+        trainingPanel = new TrainingPanel(this, academy, dataManager);
+        threatPanel = new ThreatPanel(this, academy, dataManager);
+        financePanel = new FinancePanel(this, academy, financeManager);
 
         tabbedPane.addTab("👥 1. Hero Roster", heroPanel);
         tabbedPane.addTab("⚡ 2. Training Station", trainingPanel);
         tabbedPane.addTab("🚨 3. Threat Dispatch", threatPanel);
         tabbedPane.addTab("📊 4. Finance", financePanel);
 
-        tabbedPane.addChangeListener(e -> refreshAll());
+        tabbedPane.addChangeListener(new ChangeListener() {
+            @Override
+            public void stateChanged(ChangeEvent e) {
+                refreshAll();
+            }
+        });
 
         add(tabbedPane, BorderLayout.CENTER);
 
@@ -93,17 +117,5 @@ public class MainFrame extends JFrame {
         if (trainingPanel != null) trainingPanel.refresh();
         if (threatPanel != null) threatPanel.refresh();
         if (financePanel != null) financePanel.refresh();
-    }
-
-    public Academy getAcademy() {
-        return academy;
-    }
-
-    public DataManager getDataManager() {
-        return dataManager;
-    }
-
-    public FinanceManager getFinanceManager() {
-        return financeManager;
     }
 }

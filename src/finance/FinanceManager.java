@@ -3,27 +3,16 @@ package finance;
 import java.util.ArrayList;
 
 import academy.Hero;
-import academy.Trainable;
-import threat.Threat;
 
 public class FinanceManager {
 
     private double taxRate;
 
     public FinanceManager() {
-        this(0.10);
+        this.taxRate = 0.10;
     }
 
-    public FinanceManager(double taxRate) {
-        this.taxRate = taxRate;
-    }
-
-    // Monthly allowance of a single hero (overload 1)
-    public double getMonthlyAllowance(Trainable hero) {
-        return hero.getMonthlyAllowance();
-    }
-
-    // Total monthly allowance of all heroes (overload 2)
+    // Total monthly allowance of all heroes
     public double getMonthlyAllowance(ArrayList<Hero> heroes) {
 
         double total = 0;
@@ -45,11 +34,6 @@ public class FinanceManager {
         }
 
         return total;
-    }
-
-    // Income earned by a hero for handling a threat
-    public double getThreatIncome(Hero hero, Threat threat) {
-        return hero.getThreatReward(threat);
     }
 
     public double getTaxRate() {

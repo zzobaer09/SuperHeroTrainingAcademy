@@ -184,7 +184,6 @@ public class Main {
 
                     if (academy.deleteHero(deleteId)) {
 
-                        dataManager.deleteSavedHero(deleteId);
                         dataManager.saveHeroes(academy.getHeroes(), academy.getBalance());
 
                         System.out.println("\nHero with ID " + deleteId + " deleted.\n");
