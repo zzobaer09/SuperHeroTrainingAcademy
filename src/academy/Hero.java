@@ -7,6 +7,7 @@ import threat.Threat;
 
 public class Hero implements Trainable {
 
+    // Shared counter across all heroes: increments by 1 each time a hero is created
     private static int nextId = 1;
 
     private int id;
@@ -14,6 +15,7 @@ public class Hero implements Trainable {
     private int level;
     private ArrayList<Power> powers;
 
+    // Constructor for creating a new hero (starts at Level 1 with random powers)
     public Hero(String name) {
 
         this.id = nextId++;
@@ -33,6 +35,18 @@ public class Hero implements Trainable {
 
         if (id >= nextId) {
             nextId = id + 1;
+        }
+    }
+
+    // Copy Constructor (Deep Copy)
+    public Hero(Hero other) {
+        this.id = nextId++;
+        this.name = other.name + " (Copy)";
+        this.level = other.level;
+        this.powers = new ArrayList<>();
+
+        for (Power power : other.powers) {
+            this.powers.add(new Power(power));
         }
     }
 
@@ -77,10 +91,6 @@ public class Hero implements Trainable {
 
     public void train() {
         level++;
-    }
-
-    public void train(int amount) {
-        level += amount;
     }
 
     public void updateName(String name) {

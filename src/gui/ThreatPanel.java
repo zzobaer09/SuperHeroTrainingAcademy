@@ -1,15 +1,32 @@
 package gui;
 
-import java.awt.*;
-import java.util.ArrayList;
-import javax.swing.*;
+import java.awt.BorderLayout;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Dimension;
+import java.awt.FlowLayout;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+
+import javax.swing.BorderFactory;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
+import javax.swing.JTextField;
+import javax.swing.ListSelectionModel;
 import javax.swing.table.DefaultTableModel;
+
 import academy.Academy;
 import academy.Hero;
-import academy.Power;
 import data.DataManager;
 import exceptions.HeroNotEligibleException;
-import finance.FinanceManager;
 import threat.Threat;
 
 public class ThreatPanel extends JPanel {
@@ -17,7 +34,6 @@ public class ThreatPanel extends JPanel {
     private final MainFrame mainFrame;
     private final Academy academy;
     private final DataManager dataManager;
-    private final FinanceManager financeManager;
 
     private CardLayout cardLayout;
     private JPanel mainContainer;
@@ -34,11 +50,10 @@ public class ThreatPanel extends JPanel {
     private JTextField dispatchHeroIdField;
     private DefaultTableModel rosterTableModel;
 
-    public ThreatPanel(MainFrame mainFrame, Academy academy, DataManager dataManager, FinanceManager financeManager) {
+    public ThreatPanel(MainFrame mainFrame, Academy academy, DataManager dataManager) {
         this.mainFrame = mainFrame;
         this.academy = academy;
         this.dataManager = dataManager;
-        this.financeManager = financeManager;
 
         initComponents();
     }
@@ -56,35 +71,41 @@ public class ThreatPanel extends JPanel {
     }
 
     private JPanel createIdlePanel() {
-        JPanel panel = new JPanel(new GridBagLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.insets = new Insets(10, 10, 10, 10);
-        gbc.anchor = GridBagConstraints.CENTER;
+        JPanel panel = new JPanel();
+        panel.setLayout(new BoxLayout(panel, BoxLayout.Y_AXIS));
+        panel.setBorder(BorderFactory.createEmptyBorder(40, 20, 40, 20));
 
         JLabel titleLabel = new JLabel("🚨 Threat Scanner & Dispatch Radar");
         titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 18));
-        gbc.gridy = 0;
-        panel.add(titleLabel, gbc);
+        titleLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(titleLabel);
+
+        panel.add(Box.createVerticalStrut(15));
 
         idleStatusLabel = new JLabel("System Ready. Click below to scan the city for threats.");
         idleStatusLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
         idleStatusLabel.setForeground(new Color(71, 85, 105));
-        gbc.gridy = 1;
-        panel.add(idleStatusLabel, gbc);
+        idleStatusLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        panel.add(idleStatusLabel);
+
+        panel.add(Box.createVerticalStrut(25));
 
         JButton scanButton = new JButton("🚨 Scan for Threat");
         scanButton.setFont(new Font("Segoe UI", Font.BOLD, 16));
         scanButton.setBackground(new Color(220, 38, 38)); // Bright Red
         scanButton.setForeground(Color.WHITE);
         scanButton.setFocusPainted(false);
-        scanButton.setPreferredSize(new Dimension(240, 50));
+        scanButton.setMaximumSize(new Dimension(240, 50));
+        scanButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
-        scanButton.addActionListener(e -> handleThreatScan());
+        scanButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleThreatScan();
+            }
+        });
 
-        gbc.gridy = 2;
-        panel.add(scanButton, gbc);
+        panel.add(scanButton);
 
         return panel;
     }
@@ -94,12 +115,13 @@ public class ThreatPanel extends JPanel {
         panel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
 
         // Threat Details Card (North)
-        JPanel threatCard = new JPanel(new GridLayout(4, 1, 6, 6));
-        threatCard.setBorder(BorderFactory.createTitledBorder(
-                BorderFactory.createLineBorder(new Color(220, 38, 38), 2),
-                "⚠️ ACTIVE THREAT DETECTED"
-        ));
+        JPanel threatCard = new JPanel(new GridLayout(5, 1, 4, 4));
+        threatCard.setBorder(BorderFactory.createEmptyBorder(10, 14, 10, 14));
         threatCard.setBackground(new Color(254, 242, 242)); // Light red background
+
+        JLabel threatHeaderLabel = new JLabel("⚠️ ACTIVE THREAT DETECTED");
+        threatHeaderLabel.setFont(new Font("Segoe UI", Font.BOLD, 13));
+        threatHeaderLabel.setForeground(new Color(185, 28, 28));
 
         threatTypeLabel = new JLabel();
         threatTypeLabel.setFont(new Font("Segoe UI", Font.BOLD, 14));
@@ -114,6 +136,7 @@ public class ThreatPanel extends JPanel {
         threatDescLabel = new JLabel();
         threatDescLabel.setFont(new Font("Segoe UI", Font.ITALIC, 13));
 
+        threatCard.add(threatHeaderLabel);
         threatCard.add(threatTypeLabel);
         threatCard.add(threatReqLevelLabel);
         threatCard.add(threatReqPowerLabel);
@@ -123,13 +146,10 @@ public class ThreatPanel extends JPanel {
 
         // Center: Available Heroes Reference Table
         JPanel centerPanel = new JPanel(new BorderLayout(5, 5));
-        centerPanel.setBorder(BorderFactory.createTitledBorder("Available Heroes Roster (Check eligibility before dispatching)"));
+        centerPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
 
         String[] cols = {"ID", "Name", "Level", "Powers"};
-        rosterTableModel = new DefaultTableModel(cols, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) { return false; }
-        };
+        rosterTableModel = GUIUtils.createReadOnlyTableModel(cols);
 
         JTable rosterTable = new JTable(rosterTableModel);
         rosterTable.setRowHeight(24);
@@ -137,22 +157,13 @@ public class ThreatPanel extends JPanel {
         rosterTable.getTableHeader().setFont(new Font("Segoe UI", Font.BOLD, 12));
         rosterTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 
-        rosterTable.getSelectionModel().addListSelectionListener(e -> {
-            if (!e.getValueIsAdjusting()) {
-                int row = rosterTable.getSelectedRow();
-                if (row != -1) {
-                    dispatchHeroIdField.setText(String.valueOf(rosterTableModel.getValueAt(row, 0)));
-                }
-            }
-        });
-
         JScrollPane scrollPane = new JScrollPane(rosterTable);
         centerPanel.add(scrollPane, BorderLayout.CENTER);
         panel.add(centerPanel, BorderLayout.CENTER);
 
         // South: Dispatch Controls
         JPanel dispatchControlPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 15, 10));
-        dispatchControlPanel.setBorder(BorderFactory.createTitledBorder("Hero Dispatch"));
+        dispatchControlPanel.setBorder(BorderFactory.createEmptyBorder(5, 0, 5, 0));
 
         dispatchControlPanel.add(new JLabel("Enter Hero ID:"));
         dispatchHeroIdField = new JTextField(8);
@@ -163,12 +174,22 @@ public class ThreatPanel extends JPanel {
         dispatchBtn.setFont(new Font("Segoe UI", Font.BOLD, 12));
         dispatchBtn.setBackground(new Color(22, 163, 74)); // Green
         dispatchBtn.setFocusPainted(false);
-        dispatchBtn.addActionListener(e -> handleDispatch());
+        dispatchBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleDispatch();
+            }
+        });
         dispatchControlPanel.add(dispatchBtn);
 
         JButton declineBtn = new JButton("❌ Decline");
         declineBtn.setFont(new Font("Segoe UI", Font.PLAIN, 12));
-        declineBtn.addActionListener(e -> handleDecline());
+        declineBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                handleDecline();
+            }
+        });
         dispatchControlPanel.add(declineBtn);
 
         panel.add(dispatchControlPanel, BorderLayout.SOUTH);
@@ -202,17 +223,11 @@ public class ThreatPanel extends JPanel {
     private void updateRosterTable() {
         rosterTableModel.setRowCount(0);
         for (Hero hero : academy.getHeroes()) {
-            StringBuilder powersStr = new StringBuilder();
-            ArrayList<Power> powers = hero.getPowers();
-            for (int i = 0; i < powers.size(); i++) {
-                powersStr.append(powers.get(i).getType());
-                if (i < powers.size() - 1) powersStr.append(", ");
-            }
             rosterTableModel.addRow(new Object[]{
                     hero.getId(),
                     hero.getName(),
                     hero.getLevel(),
-                    powersStr.toString()
+                    GUIUtils.formatPowers(hero)
             });
         }
     }
@@ -220,7 +235,6 @@ public class ThreatPanel extends JPanel {
     private void handleDispatch() {
         String idText = dispatchHeroIdField.getText().trim();
         if (idText.isEmpty()) {
-            JOptionPane.showMessageDialog(this, "Please enter or select a Hero ID to dispatch.", "Input Required", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
@@ -228,27 +242,14 @@ public class ThreatPanel extends JPanel {
         try {
             heroId = Integer.parseInt(idText);
         } catch (NumberFormatException e) {
-            JOptionPane.showMessageDialog(this, "Please enter a valid numeric Hero ID.", "Invalid Input", JOptionPane.ERROR_MESSAGE);
             return;
         }
 
         try {
-            Hero hero = academy.findHero(heroId);
-            double reward = academy.dispatchHero(heroId, currentThreat);
+            academy.dispatchHero(heroId, currentThreat);
 
             dataManager.saveHeroes(academy.getHeroes(), academy.getBalance());
             mainFrame.refreshAll();
-
-            String heroName = (hero != null) ? hero.getName() : ("ID " + heroId);
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Threat Successfully Neutralized!\n\nHero: " + heroName +
-                            "\nThreat: " + currentThreat.getType() +
-                            "\nReward Earned: $" + String.format("%.2f", reward) +
-                            "\nTreasury Balance: $" + String.format("%.2f", academy.getBalance()),
-                    "Mission Complete",
-                    JOptionPane.INFORMATION_MESSAGE
-            );
 
             // Reset back to idle state
             currentThreat = null;
@@ -257,12 +258,6 @@ public class ThreatPanel extends JPanel {
             cardLayout.show(mainContainer, "IDLE");
 
         } catch (HeroNotEligibleException e) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    e.getMessage() + "\nPlease choose another hero or decline.",
-                    "Dispatch Ineligible",
-                    JOptionPane.WARNING_MESSAGE
-            );
             dispatchHeroIdField.requestFocus();
         }
     }

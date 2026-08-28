@@ -1,19 +1,29 @@
 package gui;
 
-import java.awt.*;
+import java.awt.BorderLayout;
+import java.awt.Color;
+import java.awt.Font;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
-import javax.swing.*;
+
+import javax.swing.BorderFactory;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+
 import academy.Academy;
 import academy.Hero;
-import data.DataManager;
 import finance.FinanceManager;
 
 public class FinancePanel extends JPanel {
 
     private final MainFrame mainFrame;
     private final Academy academy;
-    private final DataManager dataManager;
     private final FinanceManager financeManager;
 
     private JLabel countValueLabel;
@@ -25,10 +35,9 @@ public class FinancePanel extends JPanel {
     private JTable financeTable;
     private DefaultTableModel tableModel;
 
-    public FinancePanel(MainFrame mainFrame, Academy academy, DataManager dataManager, FinanceManager financeManager) {
+    public FinancePanel(MainFrame mainFrame, Academy academy, FinanceManager financeManager) {
         this.mainFrame = mainFrame;
         this.academy = academy;
-        this.dataManager = dataManager;
         this.financeManager = financeManager;
 
         initComponents();
@@ -40,7 +49,7 @@ public class FinancePanel extends JPanel {
 
         // Top Summary Dashboard
         JPanel summaryPanel = new JPanel(new GridLayout(2, 3, 12, 12));
-        summaryPanel.setBorder(BorderFactory.createTitledBorder("Financial Overview & Treasury Metrics"));
+        summaryPanel.setBorder(BorderFactory.createEmptyBorder(0, 0, 10, 0));
 
         countValueLabel = new JLabel("0");
         balanceValueLabel = new JLabel("$0.00");
@@ -54,29 +63,24 @@ public class FinancePanel extends JPanel {
         summaryPanel.add(createMetricCard("📉 Net Allowances (after " + (int)(financeManager.getTaxRate() * 100) + "% tax)", netValueLabel, new Color(139, 92, 246)));
         summaryPanel.add(createMetricCard("⚡ Cost to Train All Heroes", totalTrainCostValueLabel, new Color(239, 68, 68)));
 
-        // Empty card for alignment or refresh button
-        JPanel extraPanel = new JPanel(new GridBagLayout());
-        extraPanel.setBackground(new Color(248, 250, 252));
-        extraPanel.setBorder(BorderFactory.createLineBorder(new Color(226, 232, 240)));
         JButton refreshBtn = new JButton("🔄 Recalculate Finances");
         refreshBtn.setFont(new Font("Segoe UI", Font.BOLD, 12));
-        refreshBtn.addActionListener(e -> mainFrame.refreshAll());
-        extraPanel.add(refreshBtn);
-        summaryPanel.add(extraPanel);
+        refreshBtn.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                mainFrame.refreshAll();
+            }
+        });
+        summaryPanel.add(refreshBtn);
 
         add(summaryPanel, BorderLayout.NORTH);
 
         // Bottom Table: Per-Hero Breakdown
         JPanel tableContainer = new JPanel(new BorderLayout(5, 5));
-        tableContainer.setBorder(BorderFactory.createTitledBorder("Individual Hero Financial Breakdown"));
+        tableContainer.setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 
         String[] columns = {"Hero ID", "Name", "Level", "Powers Count", "Training Cost", "Training Time", "Monthly Allowance"};
-        tableModel = new DefaultTableModel(columns, 0) {
-            @Override
-            public boolean isCellEditable(int row, int column) {
-                return false;
-            }
-        };
+        tableModel = GUIUtils.createReadOnlyTableModel(columns);
 
         financeTable = new JTable(tableModel);
         financeTable.setRowHeight(24);
@@ -92,10 +96,7 @@ public class FinancePanel extends JPanel {
     private JPanel createMetricCard(String title, JLabel valueLabel, Color accentColor) {
         JPanel card = new JPanel(new BorderLayout(5, 5));
         card.setBackground(new Color(248, 250, 252));
-        card.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(new Color(226, 232, 240), 1),
-                BorderFactory.createEmptyBorder(10, 14, 10, 14)
-        ));
+        card.setBorder(BorderFactory.createLineBorder(new Color(226, 232, 240), 1));
 
         JLabel titleLabel = new JLabel(title);
         titleLabel.setFont(new Font("Segoe UI", Font.PLAIN, 12));
